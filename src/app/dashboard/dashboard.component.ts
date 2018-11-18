@@ -1,41 +1,51 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
+import { FeedsService } from  './feeds.service';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
 })
-export class DashboardComponent {
-  /** Based on the screen size, switch from standard to one column per row */
+export class DashboardComponent implements OnInit {
+
+  private feeds: Array<object> = [];
+
   cards = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
     map(({ matches }) => {
-      if (matches) {
-        return [
-          { title: 'Card 1', image: 'https://material.angular.io/assets/img/examples/shiba2.jpg', body: 'Lorem Ipsum', publisher: 'elpais.com', source: 'https://elpais.com/t', cols: 4, rows: 1 },
-          { title: 'Card 2', image: 'https://material.angular.io/assets/img/examples/shiba2.jpg', body: 'Lorem Ipsum', publisher: 'elpais.com', source: 'https://elpais.com/t', cols: 4, rows: 1 },
-          { title: 'Card 3', image: 'https://material.angular.io/assets/img/examples/shiba2.jpg', body: 'Lorem Ipsum', publisher: 'elpais.com', source: 'https://elpais.com/t', cols: 4, rows: 1 },
-          { title: 'Card 4', image: 'https://material.angular.io/assets/img/examples/shiba2.jpg', body: 'Lorem Ipsum', publisher: 'elpais.com', source: 'https://elpais.com/t', cols: 4, rows: 1 },
-          { title: 'Card 1', image: 'https://material.angular.io/assets/img/examples/shiba2.jpg', body: 'Lorem Ipsum', publisher: 'elpais.com', source: 'https://elpais.com/t', cols: 4, rows: 1 },
-          { title: 'Card 2', image: 'https://material.angular.io/assets/img/examples/shiba2.jpg', body: 'Lorem Ipsum', publisher: 'elpais.com', source: 'https://elpais.com/t', cols: 4, rows: 1 },
-          { title: 'Card 3', image: 'https://material.angular.io/assets/img/examples/shiba2.jpg', body: 'Lorem Ipsum', publisher: 'elpais.com', source: 'https://elpais.com/t', cols: 4, rows: 1 },
-          { title: 'Card 4', image: 'https://material.angular.io/assets/img/examples/shiba2.jpg', body: 'Lorem Ipsum', publisher: 'elpais.com', source: 'https://elpais.com/t', cols: 4, rows: 1 }
-        ];
-      }
-
-      return [
-        { title: 'Card 1', image: 'https://material.angular.io/assets/img/examples/shiba2.jpg', body: 'Lorem Ipsum', publisher: 'elpais.com', source: 'https://elpais.com/t', cols: 1, rows: 1 },
-        { title: 'Card 2', image: 'https://material.angular.io/assets/img/examples/shiba2.jpg', body: 'Lorem Ipsum', publisher: 'elpais.com', source: 'https://elpais.com/t', cols: 1, rows: 1 },
-        { title: 'Card 3', image: 'https://material.angular.io/assets/img/examples/shiba2.jpg', body: 'Lorem Ipsum', publisher: 'elpais.com', source: 'https://elpais.com/t', cols: 1, rows: 1 },
-        { title: 'Card 4', image: 'https://material.angular.io/assets/img/examples/shiba2.jpg', body: 'Lorem Ipsum', publisher: 'elpais.com', source: 'https://elpais.com/t', cols: 1, rows: 1 },
-        { title: 'Card 1', image: 'https://material.angular.io/assets/img/examples/shiba2.jpg', body: 'Lorem Ipsum', publisher: 'elpais.com', source: 'https://elpais.com/t', cols: 1, rows: 1 },
-        { title: 'Card 2', image: 'https://material.angular.io/assets/img/examples/shiba2.jpg', body: 'Lorem Ipsum', publisher: 'elpais.com', source: 'https://elpais.com/t', cols: 1, rows: 1 },
-        { title: 'Card 3', image: 'https://material.angular.io/assets/img/examples/shiba2.jpg', body: 'Lorem Ipsum', publisher: 'elpais.com', source: 'https://elpais.com/t', cols: 1, rows: 1 },
-        { title: 'Card 4', image: 'https://material.angular.io/assets/img/examples/shiba2.jpg', body: 'Lorem Ipsum', publisher: 'elpais.com', source: 'https://elpais.com/t', cols: 1, rows: 1 }
-      ];
-    })
+      if (matches && this.feeds) {
+        return this.feeds.map((feed) => {
+          feed.cols = 4;
+          feed.rows = 1;
+          return feed;
+        });
+      };
+      return this.feeds.map((feed) => {
+        feed.cols = 1;
+        feed.rows = 1;
+        return feed;
+      });
+    });
   );
 
-  constructor(private breakpointObserver: BreakpointObserver) {}
+  constructor(private breakpointObserver: BreakpointObserver, private feedService: FeedsService) {}
+
+  ngOnInit() {
+    this.getFeeds();
+  }
+
+  public getFeeds(){
+    this.feedService.getFeeds().subscribe((data: Array<object>) => {
+      data = data.map((feed) => {
+        feed.body = feed.body.slice(0, 200);
+        feed.body += '...';
+        feed.cols = 1;
+        feed.rows = 1;
+        return feed;
+      });
+      this.feeds = data;
+    });
+  }
+
 }

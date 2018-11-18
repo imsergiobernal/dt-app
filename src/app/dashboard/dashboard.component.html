@@ -1,11 +1,9 @@
 <div class="grid-container">
   <h1 class="mat-h1">Dashboard</h1>
-  <mat-grid-list cols="4" rowHeight="350px">
-    <mat-grid-tile *ngFor="let card of cards | async" [colspan]="card.cols" [rowspan]="card.rows">
+  <mat-grid-list cols="4" rowHeight="390px">
+    <mat-grid-tile *ngFor="let card of feeds" [colspan]="card.cols" [rowspan]="card.rows">
       <mat-card class="dashboard-card">
         <mat-card-header>
-          <div mat-card-avatar class="dashboard-card-avatar">
-          </div>
           <mat-card-title>
             {{card.title}}
           </mat-card-title>
@@ -13,12 +11,12 @@
             {{card.publisher}}
           </mat-card-subtitle>
         </mat-card-header>
-        <img mat-card-image src="{{card.image}}" alt="{{card.title}}">
+        <img mat-card-image [src]="card.image" [alt]="card.title">
         <mat-card-content class="dashboard-card-content">
           <div>{{card.body}}</div>
         </mat-card-content>
         <mat-card-actions>
-          <a mat-flat-button routerLink="{{card.source}}">Source</a>
+          <a mat-flat-button target="_onblank" [href]="card.source">Source</a>
         </mat-card-actions>
       </mat-card>
     </mat-grid-tile>
